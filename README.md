@@ -1,36 +1,67 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CRUD de Series - Taller 2
 
-## Getting Started
+Aplicación web para llevar una lista de series de televisión. Permite
+agregarlas, buscarlas, editarlas, eliminarlas y marcarlas como favoritas.
+Los datos se guardan en el navegador y no se pierden al recargar.
 
-First, run the development server:
+## Tecnologías
+
+- Next.js 16 con App Router
+- TypeScript
+- React (hooks y Context API)
+- Tailwind CSS
+- localStorage
+
+## Cómo ejecutarlo
+
+Necesitas Node.js 18.18 o superior.
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Abrir http://localhost:3000
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Funcionalidades
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Lista de series
+- Búsqueda por nombre en tiempo real
+- Crear series con formulario validado
+- Página de detalle de cada serie
+- Editar y eliminar (con confirmación)
+- Marcar favoritas
+- Todo persiste al recargar
+- Diseño responsive
 
-## Learn More
+## Estructura
+src/
+├── app/ Páginas y rutas
+├── components/ Componentes de la interfaz
+├── context/ Estado global
+├── hooks/ useLocalStorage
+└── types/ Tipos de TypeScript
 
-To learn more about Next.js, take a look at the following resources:
+## Decisiones
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+**Context para el estado.** Varios componentes en rutas distintas
+necesitan las series, así que en vez de pasarlas por props se comparten
+desde dos contexts: uno de series y otro de favoritos.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+**Un hook para guardar.** `useLocalStorage` lee los datos al abrir y los
+guarda cuando cambian. Las funciones del CRUD solo modifican el estado.
 
-## Deploy on Vercel
+**"use client" solo donde hace falta.** Los componentes que muestran
+datos se quedan en el servidor. Solo los que usan estado o clics son de
+cliente.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+**Un formulario para crear y editar.** Si `SerieForm` recibe una serie,
+edita. Si no recibe nada, crea.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**Skeleton mientras carga.** Como los datos vienen del navegador, se
+muestra un skeleton en el primer render para evitar errores de
+hidratación.
+
+## Autor
+
+Felipe Ardila — ISIS3710 Programación con Tecnologías Web
