@@ -35,12 +35,14 @@ Abrir http://localhost:3000
 - Diseño responsive
 
 ## Estructura
+```text
 src/
-├── app/ Páginas y rutas
-├── components/ Componentes de la interfaz
-├── context/ Estado global
-├── hooks/ useLocalStorage
-└── types/ Tipos de TypeScript
+├── app/          Páginas y rutas
+├── components/   Componentes de la interfaz
+├── context/      Estado global
+├── hooks/        useLocalStorage
+└── types/        Tipos de TypeScript
+```
 
 ## Decisiones
 
