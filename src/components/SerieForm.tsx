@@ -3,8 +3,10 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Serie, SerieFormData } from "@/types/serie";
 
+// Opciones fijas para el <select> de genero
 const GENEROS = ["Drama", "Comedia", "Terror", "Ciencia Ficcion", "Documental"];
 
+// Valores por defecto cuando el formulario es para CREAR (no hay serie previa)
 const VACIO: SerieFormData = {
   title: "",
   genre: "",
@@ -15,6 +17,7 @@ const VACIO: SerieFormData = {
   description: "",
 };
 
+// Clases de Tailwind reutilizadas, guardadas en constantes para no repetirlas
 const INPUT =
   "w-full bg-slate-800 border border-slate-600 rounded-lg p-3 text-white placeholder-slate-400 focus:border-blue-500 focus:outline-none";
 
@@ -23,23 +26,28 @@ const LABEL = "block text-sm text-slate-300 mb-1.5";
 const ERROR = "text-red-400 text-sm mt-1 block";
 
 interface SerieFormProps {
-  serieInicial?: Serie;
-  onSubmit: (datos: SerieFormData) => void;
+  serieInicial?: Serie; // si viene, el form arranca con estos datos (modo "editar")
+  onSubmit: (datos: SerieFormData) => void; // que hacer cuando se guarda (crear o actualizar)
 }
 
+// Formulario UNICO que se reutiliza tanto para crear como para editar una serie.
+// La diferencia entre "crear" y "editar" la decide quien lo usa (ver serieInicial/onSubmit).
 export default function SerieForm({ serieInicial, onSubmit }: SerieFormProps) {
   const router = useRouter();
+  // Si hay serieInicial, arrancamos con esos datos; si no, con el formulario vacio
   const [form, setForm] = useState<SerieFormData>(serieInicial ?? VACIO);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
+  // Se ejecuta en cada input/select/textarea cuando el usuario escribe o elige algo
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
-    setForm({ ...form, [name]: value });
-    setErrors({ ...errors, [name]: "" });
+    setForm({ ...form, [name]: value }); // actualiza solo el campo que cambio
+    setErrors({ ...errors, [name]: "" }); // limpia el error de ese campo, si tenia
   };
 
+  // Revisa que los datos sean validos antes de guardar. Devuelve true/false.
   const validate = (): boolean => {
     const nuevos: Record<string, string> = {};
 
@@ -52,21 +60,24 @@ export default function SerieForm({ serieInicial, onSubmit }: SerieFormProps) {
     }
 
     setErrors(nuevos);
+    // Si el objeto "nuevos" quedo vacio, no hay errores -> es valido
     return Object.keys(nuevos).length === 0;
   };
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!validate()) return;
+    e.preventDefault(); // evita que el navegador recargue la pagina al enviar el form
+    if (!validate()) return; // si hay errores, no seguimos
 
+    // Le avisamos al padre (que puede ser addSerie o updateSerie) con los datos,
+    // asegurandonos de que seasons y rating sean numeros y no texto
     onSubmit({
       ...form,
       seasons: Number(form.seasons),
       rating: Number(form.rating),
     });
 
-    if (!serieInicial) setForm(VACIO);
-    router.push("/");
+    if (!serieInicial) setForm(VACIO); // si era creacion, limpiamos el formulario
+    router.push("/"); // volvemos al listado
   };
 
   return (
@@ -83,6 +94,7 @@ export default function SerieForm({ serieInicial, onSubmit }: SerieFormProps) {
           placeholder="Ej: Breaking Bad"
           className={INPUT}
         />
+        {/* Solo se muestra el mensaje de error si existe */}
         {errors.title && <span className={ERROR}>{errors.title}</span>}
       </div>
 
@@ -97,6 +109,7 @@ export default function SerieForm({ serieInicial, onSubmit }: SerieFormProps) {
           <option value="" className="bg-slate-800">
             Selecciona un genero
           </option>
+          {/* Genera una <option> por cada genero de la lista GENEROS */}
           {GENEROS.map((g) => (
             <option key={g} value={g} className="bg-slate-800">
               {g}
@@ -172,6 +185,7 @@ export default function SerieForm({ serieInicial, onSubmit }: SerieFormProps) {
       </div>
 
       <div className="flex gap-3 pt-2">
+        {/* El texto del boton cambia solo segun si estamos creando o editando */}
         <button
           type="submit"
           className="bg-blue-600 hover:bg-blue-500 text-white px-5 py-2.5 rounded-lg transition-colors"

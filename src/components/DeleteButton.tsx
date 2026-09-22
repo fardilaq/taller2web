@@ -4,19 +4,22 @@ import { useSeries } from "@/context/SeriesContext";
 
 interface DeleteButtonProps {
   serieId: number;
-  onDeleted?: () => void;
+  onDeleted?: () => void; // funcion opcional para avisar "ya la borre" al componente padre
 }
 
+// Boton de "Eliminar" con confirmacion (el "Delete" del CRUD).
 export default function DeleteButton({ serieId, onDeleted }: DeleteButtonProps) {
   const { deleteSerie } = useSeries();
+  // Estado local: si estamos mostrando el mensaje de "¿seguro?" o el boton normal
   const [confirmando, setConfirmando] = useState(false);
 
   const handleDelete = () => {
-    deleteSerie(serieId);
+    deleteSerie(serieId); // borra la serie del Context (y por lo tanto de localStorage)
     setConfirmando(false);
-    onDeleted?.();
+    onDeleted?.(); // si nos pasaron un callback, lo ejecutamos (ej: navegar al inicio)
   };
 
+  // Vista de confirmacion: "¿Seguro? [Si, eliminar] [Cancelar]"
   if (confirmando) {
     return (
       <div className="flex gap-2 items-center">
@@ -37,6 +40,7 @@ export default function DeleteButton({ serieId, onDeleted }: DeleteButtonProps) 
     );
   }
 
+  // Vista normal: solo el link/boton de "Eliminar"
   return (
     <button
       onClick={() => setConfirmando(true)}

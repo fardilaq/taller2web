@@ -4,6 +4,9 @@ import Link from "next/link";
 import { useSeries } from "@/context/SeriesContext";
 import SerieForm from "@/components/SerieForm";
 
+// Ruta: /series/17/edit -> el "Update" del CRUD.
+// Fijate que combina DOS carpetas dinamicas/estaticas: [id] + edit,
+// asi que Next arma la ruta uniendo carpetas reales con la carpeta [id].
 export default function EditarPage({
   params,
 }: {
@@ -15,6 +18,7 @@ export default function EditarPage({
   const [montado, setMontado] = useState(false);
   useEffect(() => setMontado(true), []);
 
+  // Buscamos la serie actual para precargar el formulario con sus datos
   const serie = getSerie(Number(id));
 
   if (!montado) {
@@ -51,6 +55,8 @@ export default function EditarPage({
 
       <h1 className="text-2xl font-bold text-white mb-6">Editar serie</h1>
 
+      {/* Le pasamos "serieInicial" para que el form arranque con los datos ya cargados,
+          y onSubmit llama a updateSerie con el MISMO id (para reemplazar, no crear otra) */}
       <SerieForm
         serieInicial={serie}
         onSubmit={(datos) => updateSerie(serie.id, datos)}

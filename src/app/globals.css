@@ -1,5 +1,7 @@
+/* Trae todas las clases utilitarias de Tailwind (bg-slate-800, flex, p-4, etc.) */
 @import "tailwindcss";
 
+/* Estilo base de toda la app: fondo oscuro y texto claro (modo oscuro fijo) */
 body {
   background: #0f1117;
   color: #e5e7eb;

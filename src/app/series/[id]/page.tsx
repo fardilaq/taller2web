@@ -6,24 +6,33 @@ import { useSeries } from "@/context/SeriesContext";
 import FavoritoButton from "@/components/FavoritoButton";
 import DeleteButton from "@/components/DeleteButton";
 
+// Ruta: /series/17  (el "[id]" en el nombre de la carpeta es lo que hace
+// que Next.js acepte cualquier numero/texto ahi y nos lo pase como parametro).
+// Esta pagina es el "Read" de UNA sola serie (el detalle).
 export default function DetallePage({
   params,
 }: {
+  // En las versiones nuevas de Next, "params" llega como una Promise,
+  // por eso hay que "desenvolverla" con use(params) antes de usarla.
   params: Promise<{ id: string }>;
 }) {
-  const { id } = use(params);
+  const { id } = use(params); // id llega como string, ej: "17"
   const router = useRouter();
   const { getSerie } = useSeries();
 
+  // Truco para evitar diferencias entre el render del servidor y el del navegador
+  // (localStorage solo existe en el navegador): esperamos a estar "montados".
   const [montado, setMontado] = useState(false);
   useEffect(() => setMontado(true), []);
 
+  // El id de la URL es texto, pero en nuestros datos "id" es number -> hay que convertirlo
   const serie = getSerie(Number(id));
 
   if (!montado) {
     return <div className="h-96 bg-slate-800 rounded-2xl animate-pulse" />;
   }
 
+  // Si buscamos un id que no existe (o ya fue borrado), mostramos este mensaje
   if (!serie) {
     return (
       <div className="text-center py-20">
@@ -53,6 +62,7 @@ export default function DetallePage({
       </Link>
 
       <div className="bg-slate-800 border border-slate-700 rounded-2xl overflow-hidden">
+        {/* La imagen es opcional, por eso el "&&": si no hay imagen, no se muestra nada */}
         {serie.image && (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -65,6 +75,7 @@ export default function DetallePage({
         <div className="p-8">
           <div className="flex justify-between items-start gap-4 mb-4">
             <h1 className="text-3xl font-bold text-white">{serie.title}</h1>
+            {/* Boton de estrellita para marcar/desmarcar favorito */}
             <FavoritoButton serieId={serie.id} />
           </div>
 
@@ -106,12 +117,14 @@ export default function DetallePage({
           )}
 
           <div className="flex flex-wrap items-center gap-3 pt-6 border-t border-slate-700">
+            {/* El "Update": arma la URL /series/17/edit usando el id de esta misma serie */}
             <Link
               href={`/series/${serie.id}/edit`}
               className="bg-blue-600 hover:bg-blue-500 text-white px-5 py-2.5 rounded-lg transition-colors"
             >
               Editar serie
             </Link>
+            {/* El "Delete": al borrar, nos manda de vuelta al inicio */}
             <DeleteButton
               serieId={serie.id}
               onDeleted={() => router.push("/")}
